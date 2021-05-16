@@ -134,7 +134,8 @@
                 const idleAnim = scene.getAnimationGroupByName("Idle");
                 const sambaAnim = scene.getAnimationGroupByName("Samba");
         
-                
+                //carrega barril
+                loadBarrels();
         
                 //Rendering loop (executed for everyframe)
                 scene.onBeforeRenderObservable.add(() => {
@@ -223,6 +224,30 @@
                 return true;
             else
                 return false;
+        }
+
+        const loadBarrels = function(){
+            const posBarrilX = [10,-22,34,5,-7,-15,35,-30,-9,19];
+            const posBarrilZ = [23,-38,-12,17,-4,8,-23,16,-35,25];
+            for(var i = 0; i<10 ; i++){
+                console.log(posBarrilX[i]);
+                console.log(posBarrilZ[i]);
+                spawnBarril(posBarrilX[i],posBarrilZ[i]);
+            }
+        }
+
+        const spawnBarril = function(posx,posz){
+            BABYLON.SceneLoader.ImportMesh(
+                "",
+                "https://models.babylonjs.com/",
+                "ExplodingBarrel.glb",
+                scene,
+                function (meshes) {          
+                    const barril = meshes[0];
+                    barril.position.x = posx;
+                    barril.position.z = posz;
+                    barril.scaling.scaleInPlace(0.02);
+            });
         }
 
                 window.initFunction = async function() {               
