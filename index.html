@@ -136,6 +136,7 @@
         
                 //carrega barril
                 loadBarrels();
+                loadMeshes();
         
                 //Rendering loop (executed for everyframe)
                 scene.onBeforeRenderObservable.add(() => {
@@ -214,12 +215,88 @@
             return scene;
         }
 
+        const loadMeshes = function(){
+            BABYLON.SceneLoader.ImportMesh("","https://models.babylonjs.com/Georgia-Tech-Dragon/","dragon.babylon",scene,
+                function (meshes) {          
+                    var dragao = meshes[0];
+                    dragao.position.x = 24;
+                    dragao.position.z = -12;
+                    dragao.scaling.scaleInPlace(10);
+            });
+
+            BABYLON.SceneLoader.ImportMesh("","https://models.babylonjs.com/", "haunted_house.glb",scene,
+                function (meshes) {          
+                    var casa = meshes[0];
+                    casa.position.x = -23;
+                    casa.position.z = 10;
+                    casa.scaling.scaleInPlace(50);
+            });
+
+            BABYLON.SceneLoader.ImportMesh("","meshes/", "10446_Palm_Tree_v1_max2010_iteration-2.obj",scene,
+                function (meshes) {          
+                    var arvore = meshes[0];
+                    arvore.position.x = 23;
+                    arvore.position.z = -10;
+                    arvore.rotate(BABYLON.Axis.X,-190);
+                    arvore.scaling.scaleInPlace(0.01);
+            });
+
+            BABYLON.SceneLoader.ImportMesh("","meshes/","12221_Cat_v1_l3.obj",scene,
+                function(mesh){
+                    var cat = mesh[0];
+                    cat.position.x = 3;
+                    cat.rotate(BABYLON.Axis.X,-190);
+                    cat.scaling.scaleInPlace(0.02);
+            });
+
+            BABYLON.SceneLoader.ImportMesh("","meshes/","12328_Statue_v1_L2.obj",scene,
+                function(meshe){
+                    var estatua = meshe[0];
+                    estatua.rotate(BABYLON.Axis.X,-190);
+                    estatua.rotate(BABYLON.Axis.Z,-40);
+                    estatua.position.x = 31;
+                    estatua.position.z = 15;
+                    estatua.scaling.scaleInPlace(0.02);
+            });
+            
+            BABYLON.SceneLoader.ImportMesh("","meshes/","12281_Container_v2_L2.obj",scene,
+                function(mesh){
+                    var container = mesh;
+                    container.forEach(function(item,index){
+                        item.position.y = 2.05;
+                        item.position.x = -20;
+                        item.position.z = -13;
+                        item.scaling.scaleInPlace(0.015);
+                    }) 
+            });
+
+            BABYLON.SceneLoader.ImportMesh("","meshes/","13919_Park_Bench_with_Pigeon_V1_l2.obj",scene,
+                function(meshes){
+                    var banco = meshes;
+                    banco.forEach(function(item,index){
+                        item.scaling.scaleInPlace(0.015);
+                        item.rotate(BABYLON.Axis.X,-190);
+                        item.position.x = -15;
+                        item.position.z = 10;
+                    })
+            });
+
+            BABYLON.SceneLoader.ImportMesh("","meshes/","Streetlight_LowRes.obj",scene,
+                function(meshes){
+                    var poste = meshes;
+                    poste.forEach(function(item,index){
+                        item.scaling.scaleInPlace(0.01);
+                        item.position.x = -13;
+                        item.position.z = 10;
+                    })
+            });
+        }
+
         const validarPosicao = function(hero){
             var heroPosX = hero.position.x;
             var heroPosZ = hero.position.z;
 
             var heroDistCenter = Math.sqrt(Math.pow(heroPosX-0,2) + Math.pow(heroPosZ,2));
-            console.log("distancia: "+heroDistCenter);
             if(heroDistCenter < 44)
                 return true;
             else
@@ -230,8 +307,6 @@
             const posBarrilX = [10,-22,34,5,-7,-15,35,-30,-9,19];
             const posBarrilZ = [23,-38,-12,17,-4,8,-23,16,-35,25];
             for(var i = 0; i<10 ; i++){
-                console.log(posBarrilX[i]);
-                console.log(posBarrilZ[i]);
                 spawnBarril(posBarrilX[i],posBarrilZ[i]);
             }
         }
