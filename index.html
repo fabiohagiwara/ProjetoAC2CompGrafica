@@ -41,6 +41,7 @@
     <script>
         var canvas = document.getElementById("renderCanvas");
         var hero;
+        var idObjetivo = 0;
         var andou = false;
         var engine = null;
         var scene = null;
@@ -124,7 +125,7 @@
                 camera1.target = hero;
         
                 //Hero character variables 
-                var heroSpeed = 0.09;
+                var heroSpeed = 0.2;
                 var heroSpeedBackwards = 0.05;
                 var heroRotationSpeed = 0.1;
         
@@ -137,8 +138,12 @@
         
                 //carrega barril
                 loadBarrels();
+                //carrega cenario
                 loadMeshes();
-        
+                //carrega coletaveis
+                loadObjetivos();
+                
+                
                 //Rendering loop (executed for everyframe)
                 scene.onBeforeRenderObservable.add(() => {
                     var keydown = false;
@@ -176,6 +181,9 @@
                     }
                     if (inputMap["b"]) {
                         keydown = true;
+                    }
+                    if(inputMap["r"]){
+                        window.location.reload();
                     }
         
                     //Manage animations to be played  
@@ -216,6 +224,74 @@
             });
         
             return scene;
+        }
+
+        const loadObjetivos = function(){
+            const posObjX = [5,-7,23,12,31,23,19,16,-26,-21];
+            const posObjZ = [-5,5,-12,-32,27,38,15,-31,34,29];
+            const meshName = ['20820_Number_0_v1.obj','20811_Number_1_v1.obj','20812_Number_2_v1.obj','20813_Number_3_v1.obj','20814_Number_4_v1.obj','20815_Number_5_v1.obj','20816_Number_6_v1.obj','20817_Number_7_v1.obj','20818_Number_8_v1.obj','20819_Number_9_v1.obj']
+            for(var i = 0; i<10; i++)
+                spawnObjetivo(posObjX[i],posObjZ[i],i,meshName[i]);
+
+        }
+
+        const spawnObjetivo = function(posx,posz,id,name){
+            BABYLON.SceneLoader.ImportMesh("","meshes/",name,scene,
+                function (meshes) {          
+                    var num = meshes;
+                    const hitbox = BABYLON.MeshBuilder.CreateCylinder("item"+id, {}, scene);
+                    hitbox.position.x = posx;
+                    hitbox.position.z = posz;
+                    hitbox.isVisible = false;
+                    num.forEach(function(item,index){
+                        item.rotate(BABYLON.Axis.X,-190);
+                        item.position.x = posx;
+                        item.position.z = posz;
+                        item.scaling.scaleInPlace(0.1);
+                    }) 
+
+                    var coletado = false;
+                    scene.onBeforeRenderObservable.add(() => {
+                        if (!coletado) {
+                            if (hitbox.intersectsMesh(hero, true)) {
+                                if (andou) {
+                                    removerObjetivo(num, hitbox, id);
+                                }
+                            }
+                        }
+                    });
+            });
+        }
+
+        const removerObjetivo = function(num, hitbox, id){
+            if(idObjetivo == id){
+                idObjetivo++;
+                playObjetivo();
+                num.forEach(function(item,index){
+                    item.dispose();
+                })
+                hitbox.dispose();
+                if(idObjetivo == 10){
+                    var texto = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+                    var instructions = new BABYLON.GUI.TextBlock();
+                    instructions.text = "PARABENS por completar, voce coletou 10/10 itens. Aperte R para reiniciar";
+                    instructions.color = "white";
+                    instructions.fontSize = 30;
+                    instructions.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+                    instructions.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+                    texto.addControl(instructions);
+                    const sambaAnim = scene.getAnimationGroupByName("Samba");
+                    sambaAnim.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
+                }
+            }
+        }
+
+        const playObjetivo = function(){
+            const somMoeda = new BABYLON.Sound("somMoeda", "./sounds/coin.mp3", scene,
+                null, {
+                    loop: false,
+                    autoplay: true
+                });
         }
 
         const loadMeshes = function(){
@@ -358,6 +434,11 @@
                 });
                 set.start();
             });
+            const somExplosao = new BABYLON.Sound("somExplosao", "./sounds/Explosion+5.mp3", scene,
+                null, {
+                    loop: false,
+                    autoplay: true
+                });
         }
 
         
