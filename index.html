@@ -84,7 +84,7 @@
             // GUI
             var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
             var instructions = new BABYLON.GUI.TextBlock();
-            instructions.text = "Mover: AWSD  Virar câmera: botão esquerdo do mouse\nFábio Kenji Hagiwara 180106\nRenê Nascimento Corrêa 188086";
+            instructions.text = "Mover: WASD  Virar câmera: botão esquerdo do mouse\nFábio Kenji Hagiwara 180106\nRenê Nascimento Corrêa 188086";
             instructions.color = "white";
             instructions.fontSize = 16;
             instructions.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT
@@ -227,8 +227,8 @@
         }
 
         const loadBarrels = function(){
-            const posBarrilX = [10,-22,34,5,-7,-15,35,-30,-9,19];
-            const posBarrilZ = [23,-38,-12,17,-4,8,-23,16,-35,25];
+            const posBarrilX = [10,-10,10,-10,10,-10,0,0,-20,20];
+            const posBarrilZ = [10,-10,-10,10,0,0,-10,10,-20,20];
             for(var i = 0; i<10 ; i++){
                 console.log(posBarrilX[i]);
                 console.log(posBarrilZ[i]);
@@ -249,6 +249,8 @@
                     barril.scaling.scaleInPlace(0.02);
             });
         }
+
+        
 
                 window.initFunction = async function() {               
                     var asyncEngineCreation = async function() {
