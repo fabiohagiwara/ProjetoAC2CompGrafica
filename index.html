@@ -40,7 +40,8 @@
     <canvas id="renderCanvas"></canvas>
     <script>
         var canvas = document.getElementById("renderCanvas");
-
+        var hero;
+        var andou = false;
         var engine = null;
         var scene = null;
         var sceneToRender = null;
@@ -114,7 +115,7 @@
         
             // Load hero character
             BABYLON.SceneLoader.ImportMesh("", "https://assets.babylonjs.com/meshes/", "HVGirl.glb", scene, function (newMeshes, particleSystems, skeletons, animationGroups) {
-                var hero = newMeshes[0];
+                hero = newMeshes[0];
         
                 //Scale the model down        
                 hero.scaling.scaleInPlace(0.1);
@@ -149,6 +150,7 @@
                         }
                         else{
                             hero.moveWithCollisions(hero.forward.scaleInPlace(heroSpeed));
+                            andou = true;
                             keydown = true;
                         }
                     }
@@ -160,6 +162,7 @@
                         }
                         else{
                             hero.moveWithCollisions(hero.forward.scaleInPlace(-heroSpeedBackwards));
+                            andou = true;
                             keydown = true;
                         }
                     }
@@ -319,9 +322,41 @@
                 scene,
                 function (meshes) {          
                     const barril = meshes[0];
+                    const hitbox = BABYLON.MeshBuilder.CreateCylinder("cilindro"+posx+posz, {}, scene);
                     barril.position.x = posx;
                     barril.position.z = posz;
+                    hitbox.position.x = posx;
+                    hitbox.position.z = posz;
+                    hitbox.isVisible = false;
                     barril.scaling.scaleInPlace(0.02);
+
+                    var explodido = false;
+                    scene.onBeforeRenderObservable.add(() => {
+                        if (!explodido) {
+                            if (hitbox.intersectsMesh(hero, true)) {
+                                if (andou) {
+                                    removerBarril(barril, hitbox);
+                                    explodido = true;
+                                }
+                            }
+                        }
+                    });
+            });
+        }
+
+        const removerBarril = function(barril, hitbox){
+            playAnimation(barril.position);
+            barril.dispose();
+            hitbox.dispose();
+        }
+
+        const playAnimation = function(posicao){
+            BABYLON.ParticleHelper.CreateAsync("explosion", scene).then((set) => {
+                set.systems.forEach(s => {
+                    s.emitter = posicao;
+                    s.maxSize = 0.1;
+                });
+                set.start();
             });
         }
 
